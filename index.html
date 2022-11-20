@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #game {
+            border: 1px solid black;
+            display: block;
+            /* margin: 0 auto; */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .images {
+            display: none;
+        }
+    </style>
+    <title>Tavlla</title>
+</head>
+
+<body>
+    <canvas id="game" width="800" height="700"></canvas>
+    <img class="images" id="board" src="res/img/board.png">
+    <img class="images" id="whitePiece" src="res/img/white-piece.png">
+    <img class="images" id="blackPiece" src="res/img/black-piece.png">
+
+    <script>
+        window.addEventListener("load", function () {
+            const canvas = document.getElementById("game");
+            const ctx = canvas.getContext("2d");
+
+            const boardImg = document.getElementById("board");
+            const whitePiece = document.getElementById("whitePiece");
+            const blackPiece = document.getElementById("blackPiece");
+            const pieceSize = 50;
+            ctx.drawImage(boardImg, 0, 0, canvas.width, canvas.height);
+
+            class Board {
+                constructor() {
+                    this.positions = [];
+                    this.createPositions();
+                }
+
+                createPositions() {
+                    for (let y = 50; y < canvas.height - 50; y += 350) {
+                        for (let x = 50; x < canvas.width - 50; x += 50) {
+                            if (x === 350) x += 100;
+                            this.positions.push(new Position(this, x, y));
+                        }
+                    }
+                }
+
+                draw(context) {
+                    this.positions.forEach(position => position.draw(context));
+                }
+            }
+
+            class Position {
+                constructor(board, x, y, w, h) {
+                    this.board = board;
+                    this.x = x;
+                    this.y = y;
+                    this.w = 50;
+                    this.h = 250;
+                    this.tiles = [];
+                    this.createTiles();
+                }
+                
+                createTiles() {
+                    for (let y = this.y; y < this.y + this.h; y += pieceSize) {
+                        this.tiles.push(new Tile(this, this.x, y));
+                    }
+                }
+
+                draw(context) {
+                    context.strokeStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+                    this.tiles.forEach(tile => tile.draw(context));
+                }
+            }
+
+            class Tile {
+                constructor(position, x, y) {
+                    this.position = position;
+                    this.x = x;
+                    this.y = y;
+                }
+
+                draw(context) {
+                    context.strokeRect(this.x, this.y, pieceSize, pieceSize);
+                }
+            }
+
+            const board = new Board();
+            board.draw(ctx);
+        });
+    </script>
+</body>
+
+</html>
