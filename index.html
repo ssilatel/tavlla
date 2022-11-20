@@ -47,6 +47,8 @@
 
             class Board {
                 constructor() {
+                    this.w = canvas.width;
+                    this.h = canvas.height;
                     this.positions = [];
                     this.createPositions();
                 }
@@ -77,8 +79,14 @@
                 }
                 
                 createTiles() {
-                    for (let y = this.y; y < this.y + this.h; y += pieceSize) {
-                        this.tiles.push(new Tile(this, this.x, y));
+                    if (this.y < this.board.h / 2) {
+                        for (let y = this.y; y < this.y + this.h; y += pieceSize) {
+                            this.tiles.push(new Tile(this, this.x, y));
+                        }
+                    } else if (this.y > this.board.h / 2) {
+                        for (let y = this.y + this.h - pieceSize; y >= this.y; y -= pieceSize) {
+                            this.tiles.push(new Tile(this, this.x, y));
+                        }
                     }
                 }
 
