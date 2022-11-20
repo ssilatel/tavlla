@@ -76,6 +76,7 @@
                     this.h = 250;
                     this.tiles = [];
                     this.createTiles();
+                    this.pieces = [];
                 }
                 
                 createTiles() {
@@ -91,8 +92,9 @@
                 }
 
                 draw(context) {
-                    context.strokeStyle = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-                    this.tiles.forEach(tile => tile.draw(context));
+                    for (let i = 0; i < this.pieces.length; ++i) {
+                        this.pieces[i].draw(context);
+                    }
                 }
             }
 
@@ -102,13 +104,24 @@
                     this.x = x;
                     this.y = y;
                 }
+            }
+
+            class Piece {
+                constructor(position, owner, x, y) {
+                    this.position = position;
+                    this.owner = owner;
+                    this.image = this.owner === "player1" ? whitePiece : blackPiece;
+                    this.x = x;
+                    this.y = y;
+                }
 
                 draw(context) {
-                    context.strokeRect(this.x, this.y, pieceSize, pieceSize);
+                    context.drawImage(this.image, this.x, this.y, pieceSize, pieceSize);
                 }
             }
 
             const board = new Board();
+            board.positions[0].pieces.push(new Piece(board.positions[0], "player1", board.positions[0].tiles[0].x, board.positions[0].tiles[0].y));
             board.draw(ctx);
         });
     </script>
