@@ -60,6 +60,45 @@
                             this.positions.push(new Position(this, x, y));
                         }
                     }
+                    this.positions.reverse();
+                    this.positions = this.positions.splice(0, 12).concat(this.positions.reverse());
+                }
+
+                addPieceToPosition(position, player)  {
+                    this.positions[position].addPiece(player);
+                }
+
+                setBoard() {
+                    this.addPieceToPosition(0, "player1");
+                    this.addPieceToPosition(0, "player1");
+                    this.addPieceToPosition(5, "player2");
+                    this.addPieceToPosition(5, "player2");
+                    this.addPieceToPosition(5, "player2");
+                    this.addPieceToPosition(5, "player2");
+                    this.addPieceToPosition(5, "player2");
+                    this.addPieceToPosition(7, "player2");
+                    this.addPieceToPosition(7, "player2");
+                    this.addPieceToPosition(7, "player2");
+                    this.addPieceToPosition(11, "player1");
+                    this.addPieceToPosition(11, "player1");
+                    this.addPieceToPosition(11, "player1");
+                    this.addPieceToPosition(11, "player1");
+                    this.addPieceToPosition(11, "player1");
+                    this.addPieceToPosition(12, "player2");
+                    this.addPieceToPosition(12, "player2");
+                    this.addPieceToPosition(12, "player2");
+                    this.addPieceToPosition(12, "player2");
+                    this.addPieceToPosition(12, "player2");
+                    this.addPieceToPosition(16, "player1");
+                    this.addPieceToPosition(16, "player1");
+                    this.addPieceToPosition(16, "player1");
+                    this.addPieceToPosition(18, "player1");
+                    this.addPieceToPosition(18, "player1");
+                    this.addPieceToPosition(18, "player1");
+                    this.addPieceToPosition(18, "player1");
+                    this.addPieceToPosition(18, "player1");
+                    this.addPieceToPosition(23, "player2");
+                    this.addPieceToPosition(23, "player2");
                 }
 
                 draw(context) {
@@ -68,7 +107,7 @@
             }
 
             class Position {
-                constructor(board, x, y, w, h) {
+                constructor(board, x, y, pos) {
                     this.board = board;
                     this.x = x;
                     this.y = y;
@@ -91,6 +130,10 @@
                     }
                 }
 
+                addPiece(player) {
+                    this.pieces.push(new Piece(this.board, this, player, this.tiles[this.pieces.length]));
+                }
+
                 draw(context) {
                     for (let i = 0; i < this.pieces.length; ++i) {
                         this.pieces[i].draw(context);
@@ -107,12 +150,13 @@
             }
 
             class Piece {
-                constructor(position, owner, x, y) {
-                    this.position = position;
+                constructor(board, position, owner, tile) {
+                    this.board = board;
+                    this.position = this.board.positions.indexOf(position);
                     this.owner = owner;
                     this.image = this.owner === "player1" ? whitePiece : blackPiece;
-                    this.x = x;
-                    this.y = y;
+                    this.x = tile.x;
+                    this.y = tile.y;
                 }
 
                 draw(context) {
@@ -121,7 +165,7 @@
             }
 
             const board = new Board();
-            board.positions[0].pieces.push(new Piece(board.positions[0], "player1", board.positions[0].tiles[0].x, board.positions[0].tiles[0].y));
+            board.setBoard();
             board.draw(ctx);
         });
     </script>
