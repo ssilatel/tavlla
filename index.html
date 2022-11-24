@@ -102,7 +102,14 @@
                 }
 
                 draw(context) {
+                    context.drawImage(boardImg, 0, 0, canvas.width, canvas.height);
                     this.positions.forEach(position => position.draw(context));
+                }
+
+                update() {
+                    this.positions.forEach(p => {
+                        p.update();
+                    });
                 }
             }
 
@@ -116,6 +123,7 @@
                     this.tiles = [];
                     this.createTiles();
                     this.pieces = [];
+                    this.clicked = false;
                 }
                 
                 createTiles() {
@@ -134,9 +142,29 @@
                     this.pieces.push(new Piece(this.board, this, player, this.tiles[this.pieces.length]));
                 }
 
+                movePiece() {
+                    if (this.pieces.length > 0) {
+                        this.pieces.pop();
+                        this.board.positions[this.board.positions.indexOf(this) + 1].addPiece();
+                    }
+                }
+
+                clickPosition(mouseX, mouseY) {
+                    if (mouseX >= this.x && mouseX <= this.x + this.w && mouseY >= this.y && mouseY <= this.y + this.h) {
+                        this.clicked = true;
+                    }
+                }
+
                 draw(context) {
                     for (let i = 0; i < this.pieces.length; ++i) {
                         this.pieces[i].draw(context);
+                    }
+                }
+
+                update() {
+                    if (this.clicked) {
+                        this.movePiece();
+                        this.clicked = false;
                     }
                 }
             }
@@ -163,10 +191,25 @@
                     context.drawImage(this.image, this.x, this.y, pieceSize, pieceSize);
                 }
             }
-
             const board = new Board();
             board.setBoard();
-            board.draw(ctx);
+
+            canvas.addEventListener("click", (event) => {
+                const canvasRect = canvas.getBoundingClientRect();
+                const mouseX = event.clientX - canvasRect.left;
+                const mouseY = event.clientY - canvasRect.top;
+                board.positions.forEach(p => {
+                    p.clickPosition(mouseX, mouseY);
+                })
+            });
+
+            function gameLoop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                board.draw(ctx);
+                board.update();
+                requestAnimationFrame(gameLoop);
+            }
+            gameLoop();
         });
     </script>
 </body>
