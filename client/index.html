@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #game {
+            border: 1px solid black;
+            display: block;
+            /* margin: 0 auto; */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .images {
+            display: none;
+        }
+    </style>
+    <title>Tavlla</title>
+</head>
+
+<body>
+    <canvas id="game" width="800" height="700"></canvas>
+    <img class="images" id="board" src="res/img/board.png">
+    <img class="images" id="whitePiece" src="res/img/white-piece.png">
+    <img class="images" id="blackPiece" src="res/img/black-piece.png">
+
+    <script type="module" src="res/js/main.js"></script>
+</body>
+
+</html>
