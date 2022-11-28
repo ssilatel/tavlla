@@ -5,7 +5,6 @@ window.addEventListener("load", function () {
     const ctx = canvas.getContext("2d");
 
     const board = new Board(canvas);
-    board.setBoard();
 
     canvas.addEventListener("click", (event) => {
         const canvasRect = canvas.getBoundingClientRect();
@@ -13,6 +12,9 @@ window.addEventListener("load", function () {
         const mouseY = event.clientY - canvasRect.top;
         for (let i = 0; i < board.positions.length; ++i) {
             board.positions[i].clickPosition(mouseX, mouseY);
+        }
+        if (board.rollButton.rolling || board.rollButton.confirming) {
+            board.rollButton.clickButton(mouseX, mouseY);
         }
     });
 
