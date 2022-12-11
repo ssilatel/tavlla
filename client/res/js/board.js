@@ -1,22 +1,28 @@
 import KilledTile from "./killedTiles.js";
+import Player from "./player.js";
 import Position from "./position.js";
 import RollButton from "./rollButton.js";
+import UndoButton from "./undoButton.js";
 import { PreGame, Rolling, Moving } from "./states.js";
 
 export default class Board {
-    constructor(canvas, image) {
+    constructor(canvas) {
         this.canvas = canvas
         this.w = this.canvas.width;
         this.h = this.canvas.height;
         this.image = document.getElementById("board");
-        this.currentPlayer = "";
-        this.otherPlayer = "";
-        this.direction = undefined;
+        this.players = [new Player(this, "player1"), new Player(this, "player2")];
+        this.player1 = this.players[0].name;
+        this.player2 = this.players[1].name;
+        this.currentPlayer = this.players[0];
+        this.otherPlayer = this.players[1];
+        this.direction = 1;
         this.dice = [];
         this.positions = [];
         this.createPositions();
-        this.killedTiles = [new KilledTile(this, 375, 225, "player2"), new KilledTile(this, 375, 425, "player1")];
+        this.killedTiles = [new KilledTile(this, 375, 225, this.player2), new KilledTile(this, 375, 425, this.player1)];
         this.rollButton = new RollButton(this, 550, 325, 100, 50);
+        this.undoButton = new UndoButton(this, 150, 325, 100, 50);
         this.states = [new PreGame(this), new Rolling(this), new Moving(this)];
         this.currentState = this.states[0];
     }
@@ -35,6 +41,8 @@ export default class Board {
         }
         this.positions.reverse();
         this.positions = this.positions.splice(0, 12).concat(this.positions.reverse());
+        this.positions.unshift(new Position(this, 750, 400));
+        this.positions.push(new Position(this, 750, 50));
     }
 
     addPieceToPosition(position, player)  {
@@ -42,39 +50,39 @@ export default class Board {
     }
 
     setBoard() {
-        this.currentPlayer = "player1";
-        this.otherPlayer = "player2";
+        this.currentPlayer = this.players[0];
+        this.otherPlayer = this.players[1];
         this.direction = 1;
-        this.addPieceToPosition(0, this.currentPlayer);
-        this.addPieceToPosition(0, this.currentPlayer);
-        this.addPieceToPosition(5, this.otherPlayer);
-        this.addPieceToPosition(5, this.otherPlayer);
-        this.addPieceToPosition(5, this.otherPlayer);
-        this.addPieceToPosition(5, this.otherPlayer);
-        this.addPieceToPosition(5, this.otherPlayer);
-        this.addPieceToPosition(7, this.otherPlayer);
-        this.addPieceToPosition(7, this.otherPlayer);
-        this.addPieceToPosition(7, this.otherPlayer);
-        this.addPieceToPosition(11, this.currentPlayer);
-        this.addPieceToPosition(11, this.currentPlayer);
-        this.addPieceToPosition(11, this.currentPlayer);
-        this.addPieceToPosition(11, this.currentPlayer);
-        this.addPieceToPosition(11, this.currentPlayer);
-        this.addPieceToPosition(12, this.otherPlayer);
-        this.addPieceToPosition(12, this.otherPlayer);
-        this.addPieceToPosition(12, this.otherPlayer);
-        this.addPieceToPosition(12, this.otherPlayer);
-        this.addPieceToPosition(12, this.otherPlayer);
-        this.addPieceToPosition(16, this.currentPlayer);
-        this.addPieceToPosition(16, this.currentPlayer);
-        this.addPieceToPosition(16, this.currentPlayer);
-        this.addPieceToPosition(18, this.currentPlayer);
-        this.addPieceToPosition(18, this.currentPlayer);
-        this.addPieceToPosition(18, this.currentPlayer);
-        this.addPieceToPosition(18, this.currentPlayer);
-        this.addPieceToPosition(18, this.currentPlayer);
-        this.addPieceToPosition(23, this.otherPlayer);
-        this.addPieceToPosition(23, this.otherPlayer);
+        this.addPieceToPosition(1, this.player1);
+        this.addPieceToPosition(1, this.player1);
+        this.addPieceToPosition(6, this.player2);
+        this.addPieceToPosition(6, this.player2);
+        this.addPieceToPosition(6, this.player2);
+        this.addPieceToPosition(6, this.player2);
+        this.addPieceToPosition(6, this.player2);
+        this.addPieceToPosition(8, this.player2);
+        this.addPieceToPosition(8, this.player2);
+        this.addPieceToPosition(8, this.player2);
+        this.addPieceToPosition(12, this.player1);
+        this.addPieceToPosition(12, this.player1);
+        this.addPieceToPosition(12, this.player1);
+        this.addPieceToPosition(12, this.player1);
+        this.addPieceToPosition(12, this.player1);
+        this.addPieceToPosition(13, this.player2);
+        this.addPieceToPosition(13, this.player2);
+        this.addPieceToPosition(13, this.player2);
+        this.addPieceToPosition(13, this.player2);
+        this.addPieceToPosition(13, this.player2);
+        this.addPieceToPosition(17, this.player1);
+        this.addPieceToPosition(17, this.player1);
+        this.addPieceToPosition(17, this.player1);
+        this.addPieceToPosition(19, this.player1);
+        this.addPieceToPosition(19, this.player1);
+        this.addPieceToPosition(19, this.player1);
+        this.addPieceToPosition(19, this.player1);
+        this.addPieceToPosition(19, this.player1);
+        this.addPieceToPosition(24, this.player2);
+        this.addPieceToPosition(24, this.player2);
     }
 
     rollDice() {
@@ -92,13 +100,15 @@ export default class Board {
     }
 
     changePlayer() {
-        if (this.currentPlayer === "player1") {
-            this.currentPlayer = "player2";
-            this.otherPlayer = "player1";
+        this.currentPlayer.piecesKilledThisTurn = [];
+        
+        if (this.currentPlayer === this.players[0]) {
+            this.currentPlayer = this.players[1];
+            this.otherPlayer = this.players[0];
             this.direction = -1;
-        } else if (this.currentPlayer === "player2") {
-            this.currentPlayer = "player1";
-            this.otherPlayer = "player2";
+        } else if (this.currentPlayer === this.players[1]) {
+            this.currentPlayer = this.players[0];
+            this.otherPlayer = this.players[1];
             this.direction = 1;
         }
     }
@@ -112,6 +122,9 @@ export default class Board {
             this.killedTiles[i].draw(context);
         }
         this.rollButton.draw(context);
+        if (this.currentPlayer.hasMoved) {
+            this.undoButton.draw(context);
+        }
     }
 
     update() {

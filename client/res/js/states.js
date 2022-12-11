@@ -48,6 +48,9 @@ export class Moving extends State {
         if (this.board.dice.length === 0) {
             this.board.rollButton.showingDice = false;
             this.board.rollButton.confirming = true;
+        } else {
+            this.board.rollButton.showingDice = true;
+            this.board.rollButton.confirming = false;
         }
     }
 }

@@ -13,9 +13,8 @@ window.addEventListener("load", function () {
         for (let i = 0; i < board.positions.length; ++i) {
             board.positions[i].clickPosition(mouseX, mouseY);
         }
-        if (board.rollButton.rolling || board.rollButton.confirming) {
-            board.rollButton.clickButton(mouseX, mouseY);
-        }
+        board.rollButton.clickButton(mouseX, mouseY);
+        board.undoButton.clickButton(mouseX, mouseY);
     });
 
     function gameLoop() {

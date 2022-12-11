@@ -4,9 +4,9 @@ export default class Piece {
         this.position = this.board.positions[this.board.positions.indexOf(position)];
         this.owner = owner;
         this.image = undefined;
-        if (this.owner === "player1") {
+        if (this.owner === this.board.player1) {
             this.image = document.getElementById("whitePiece");
-        } else {
+        } else if (this.owner === this.board.player2) {
             this.image = document.getElementById("blackPiece");
         }
         this.x = tile.x;

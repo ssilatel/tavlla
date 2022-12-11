@@ -23,9 +23,21 @@ export default class RollButton {
             }
         }
 
+        if (mouseX >= this.x && mouseX <= this.x + this.w + 50 && mouseY >= this.y && mouseY <= this.y + this.h) {
+            if (this.showingDice && this.board.dice.length === 2) {
+                let tmp = this.board.dice[0];
+                this.board.dice[0] = this.board.dice[1];
+                this.board.dice[1] = tmp;
+                this.diceNumbers[0] = this.board.dice[0];
+                this.diceNumbers[1] = this.board.dice[1];
+            }
+        }
 
         if (mouseX >= this.x && mouseX <= this.x + this.w + 50 && mouseY >= this.y && mouseY <= this.y + this.h) {
             if (this.confirming) {
+                this.board.currentPlayer.movedDice = [];
+                this.board.currentPlayer.lastMove = [];
+                this.board.currentPlayer.hasMoved = false;
                 this.board.changePlayer();
                 this.board.setState(1);
                 this.confirming = false;

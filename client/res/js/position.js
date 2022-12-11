@@ -12,7 +12,8 @@ export default class Position {
         this.tiles = [];
         this.createTiles();
         this.pieces = [];
-        this.ownedBy = "";
+        this.owner = "";
+        this.killedTiles = [];
     }
     
     createTiles() {
@@ -35,34 +36,45 @@ export default class Position {
         }
     }
 
-    movePiece() {
-        const targetPos = this.board.positions[this.board.positions.indexOf(this) + (this.board.dice[0] * this.board.direction)];
-
-        if ((this.ownedBy === this.board.currentPlayer || (this.pieces.length === 1 && this.pieces[0].owner === this.board.currentPlayer)) 
-            && this.pieces.length > 0
-            && (targetPos.ownedBy !== this.board.otherPlayer)
-        ) {
-            if (targetPos.pieces.length === 1 && targetPos.pieces[0].owner !== this.board.currentPlayer) {
-                targetPos.killPiece();
-            }
-            
-            this.pieces.pop();
-            targetPos.addPiece(this.board.currentPlayer);
-            this.board.dice.shift();
-        }
+    removePiece() {
+        this.pieces.pop();
     }
     
     killPiece() {
-        this.pieces.pop();
-        if (this.board.otherPlayer === "player1") {
+        this.board.currentPlayer.killedPieces.push({ pos: this.board.positions.indexOf(this) });
+        this.removePiece();
+        if (this.board.otherPlayer.name === this.board.player1) {
             this.board.killedTiles[1].pieces++;
-        } else if (this.board.otherPlayer === "player2") {
+        } else if (this.board.otherPlayer.name === this.board.player2) {
             this.board.killedTiles[0].pieces++;
         }
     }
 
+    movePiece() {
+        const targetPos = this.board.positions[this.board.positions.indexOf(this) + (this.board.dice[0] * this.board.direction)];
+
+        if ((this.owner === this.board.currentPlayer.name || (this.pieces.length === 1 && this.pieces[0].owner === this.board.currentPlayer.name))
+            && (this.pieces.length > 0)
+            && (targetPos.owner !== this.board.otherPlayer.name)
+        ) {
+            if (targetPos.pieces.length === 1 && targetPos.pieces[0].owner !== this.board.currentPlayer.name) {
+                targetPos.killPiece();
+            } else {
+                this.board.currentPlayer.killedPieces.push({ pos: 0 });
+            }
+            
+            this.board.currentPlayer.hasMoved = true;
+            this.pieces.pop();
+            targetPos.addPiece(this.board.currentPlayer.name);
+            this.board.currentPlayer.lastMove.push({ from: this.board.positions.indexOf(this), to: this.board.positions.indexOf(targetPos) });
+            this.board.currentPlayer.movedDice.push(this.board.dice[0]);
+            this.board.dice.shift();
+        }
+
+   }
+    
     clickPosition(mouseX, mouseY) {
-        if (mouseX >= this.x && mouseX <= this.x + this.w && mouseY >= this.y && mouseY <= this.y + this.h) {
+        if (mouseX >= this.x && mouseX <= this.x + this.w && mouseY >= this.y && mouseY <= this.y + this.h && this.board.dice.length > 0) {
             this.movePiece();
         }
     }
@@ -78,9 +90,9 @@ export default class Position {
             }
             context.save();
             context.font = "30px Roboto";
-            if (this.ownedBy === "player1") {
+            if (this.owner === this.board.player1) {
                 context.fillStyle = "rgb(0, 0, 0)";
-            } else if (this.ownedBy === "player2") {
+            } else if (this.owner === this.board.player2) {
                 context.fillStyle = "rgb(255, 255, 255)";
             }
             context.fillText(this.pieces.length, this.pieces[4].x + 20, this.pieces[4].y + 35);
@@ -90,9 +102,9 @@ export default class Position {
 
     update() {
         if (this.pieces.length > 1) {
-            this.ownedBy = this.pieces[0].owner;
+            this.owner = this.pieces[0].owner;
         } else {
-            this.ownedBy = "";
+            this.owner = "";
         }
     }
 }
